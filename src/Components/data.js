@@ -13,7 +13,7 @@ export const category = [
   },
   {
     id: 4,
-    name: "sciences",
+    name: "science",
   },
   {
     id: 5,

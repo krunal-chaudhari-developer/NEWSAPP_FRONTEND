@@ -1,13 +1,16 @@
 import React, { useEffect, useRef, useState } from "react";
 import NewsItems from "./NewsItems";
 import axios from "axios";
-import Navbar from "./Navbar";
 import {
   AiOutlineCaretDown,
   AiOutlineDoubleLeft,
   AiOutlineDoubleRight,
 } from "react-icons/ai";
 import { countries } from "./data";
+import { BsStarFill } from "react-icons/bs";
+import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
+import Layout from "./Layout";
 
 const NewsPage = ({ category }) => {
   const [news, setNews] = useState([]);
@@ -20,22 +23,13 @@ const NewsPage = ({ category }) => {
     code: "in",
   });
   const [active, setActive] = useState(1);
+  const [starred, setStarred] = useState([]);
+  const navigate = useNavigate();
   const newsPerPage = 8;
 
   const startIndex = (active - 1) * newsPerPage;
   const endIndex = startIndex + newsPerPage;
-
   const currentItems = news.slice(startIndex, endIndex);
-
-  const next = () => {
-    if (active === Math.ceil(news.length / newsPerPage)) return;
-    setActive(active + 1);
-  };
-
-  const prev = () => {
-    if (active === 1) return;
-    setActive(active - 1);
-  };
 
   useEffect(() => {
     const handleOutsideClick = (e) => {
@@ -59,6 +53,25 @@ const NewsPage = ({ category }) => {
       .then((res) => setNews(res.data.articles));
     setLoading(false);
   }, [category]);
+
+  const handleStarred = (obj) => {
+    setStarred((prevnews) => {
+      const star = [...prevnews, obj];
+      localStorage.setItem("starred_News", JSON.stringify(star));
+      return star;
+    });
+    obj !== null ? toast.success("Added to Starred") : toast.error("Add Again");
+  };
+
+  const next = () => {
+    if (active === Math.ceil(news.length / newsPerPage)) return;
+    setActive(active + 1);
+  };
+
+  const prev = () => {
+    if (active === 1) return;
+    setActive(active - 1);
+  };
 
   const handleSearch = async () => {
     setLoading(true);
@@ -87,48 +100,62 @@ const NewsPage = ({ category }) => {
 
   return (
     <>
-      <Navbar
+      <Layout
         search={search}
         setSearch={setSearch}
         handleSearch={handleSearch}
       />
       <div className={`${loading ? "hidden" : ""}`}>
-        <div ref={ref} className="relative w-fit">
-          <div className="flex space-x-3 my-2 mx-6 relative">
-            <h1 className="font-bold my-0.5">Which Country's News You want?</h1>
-            <button
-              onClick={() => setOpen(!open)}
-              className="flex bg-slate-100 hover:bg-slate-200 rounded-lg px-2"
-            >
-              <h1 className="">{country.name}</h1>
-              <AiOutlineCaretDown size={20} className="my-1 mx-0.5" />
-            </button>
-          </div>
-          <div className="absolute top-6 -right-32">
-            {open && (
-              <div
-                animate={{
-                  mount: { y: 0 },
-                  unmount: { y: 55 },
-                }}
-                className="bg-white shadow-lg h-56 overflow-auto "
+        <div className="flex justify-between">
+          <div ref={ref} className="relative w-fit">
+            <div className="flex space-x-3 my-2 mx-6 relative">
+              <h1 className="font-bold my-0.5">
+                Which Country's News You want?
+              </h1>
+              <button
+                onClick={() => setOpen(!open)}
+                className="flex bg-slate-100 hover:bg-slate-200 rounded-lg px-2"
               >
-                {countries.map((e) => (
-                  <div key={e.id} className="">
-                    <button
-                      onClick={() => handleCountry(e)}
-                      animate={{
-                        mount: { y: 0 },
-                        unmount: { y: 25 },
-                      }}
-                      className="bg-white py-2 shadow-lg w-56 hover:bg-slate-200 "
-                    >
-                      {e.country}
-                    </button>
-                  </div>
-                ))}
-              </div>
-            )}
+                <h1 className="">{country.name}</h1>
+                <AiOutlineCaretDown size={20} className="my-1 mx-0.5" />
+              </button>
+            </div>
+            <div className="absolute top-6 -right-32">
+              {open && (
+                <div
+                  animate={{
+                    mount: { y: 0 },
+                    unmount: { y: 55 },
+                  }}
+                  className="bg-white shadow-lg h-56 overflow-auto "
+                >
+                  {countries.map((e) => (
+                    <div key={e.id} className="">
+                      <button
+                        onClick={() => handleCountry(e)}
+                        animate={{
+                          mount: { y: 0 },
+                          unmount: { y: 25 },
+                        }}
+                        className="bg-white py-2 shadow-lg w-56 hover:bg-slate-200 "
+                      >
+                        {e.country}
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+
+          <div className="bg-slate-300 my-2 rounded-md hover:bg-slate-400 mx-10">
+            <button
+              onClick={() => navigate("/starred")}
+              className="flex space-x-3 px-3 py-1"
+            >
+              <BsStarFill size={20} className="my-1" />
+              <h1 className="text-lg font-semibold">Starred</h1>
+            </button>
           </div>
         </div>
 
@@ -136,6 +163,8 @@ const NewsPage = ({ category }) => {
           {currentItems.map((article, id) => (
             <div key={id} className="flex">
               <NewsItems
+                article={article}
+                handleStarred={handleStarred}
                 description={article.description}
                 name={article.source.name}
                 title={article.title}

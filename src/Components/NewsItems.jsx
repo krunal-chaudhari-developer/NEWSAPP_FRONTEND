@@ -3,7 +3,15 @@ import { Link } from "react-router-dom";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import blank from "../assets/blank.jfif";
 
-const NewsItems = ({ description, name, title, url, imageUrl }) => {
+const NewsItems = ({
+  handleStarred,
+  article,
+  description,
+  name,
+  title,
+  url,
+  imageUrl,
+}) => {
   const ref = useRef();
   const [open, setOpen] = useState(false);
 
@@ -57,6 +65,7 @@ const NewsItems = ({ description, name, title, url, imageUrl }) => {
           <div className="absolute top-7 -left-14 ">
             {open && (
               <button
+                onClick={() => handleStarred(article)}
                 animate={{
                   mount: { y: 0 },
                   unmount: { y: 25 },

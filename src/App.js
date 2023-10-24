@@ -1,6 +1,7 @@
 import React from "react";
 import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
 import NewsPage from "./Components/NewsPage";
+import Starred from "./Components/Starred";
 
 const App = () => {
   return (
@@ -20,6 +21,7 @@ const App = () => {
             path="/technology"
             element={<NewsPage category="technology" />}
           />
+          <Route path="/:starred" element={<Starred />} />
         </Routes>
       </Router>
     </>
