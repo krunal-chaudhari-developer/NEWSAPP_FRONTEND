@@ -3,7 +3,6 @@ import React, { useEffect, useState } from "react";
 
 const Navbar = () => {
   const [news, setNews] = useState([]);
-  const [search, setSearch] = useState("");
 
   // en-us&US for english
   // hi-in&IN for hindi
