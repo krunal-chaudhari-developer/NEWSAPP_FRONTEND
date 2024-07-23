@@ -11,6 +11,7 @@ import { BsStarFill } from "react-icons/bs";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import Layout from "./Layout";
+import { generalnews } from "../news";
 
 const NewsPage = ({ category }) => {
   const [news, setNews] = useState([]);
@@ -25,7 +26,7 @@ const NewsPage = ({ category }) => {
   const [active, setActive] = useState(1);
   const [starred, setStarred] = useState([]);
   const navigate = useNavigate();
-  const newsPerPage = 8;
+  const newsPerPage = 1;
 
   const startIndex = (active - 1) * newsPerPage;
   const endIndex = startIndex + newsPerPage;
@@ -159,8 +160,11 @@ const NewsPage = ({ category }) => {
           </div>
         </div>
 
+        <div className="font-semibold mx-7 p-1 rounded-3xl bg-slate-200 w-fit">
+          Real API doesn't work that's why the news cannot change
+        </div>
         <div className="mb-5">
-          {currentItems.map((article, id) => (
+          {generalnews.map((article, id) => (
             <div key={id} className="flex">
               <NewsItems
                 article={article}
